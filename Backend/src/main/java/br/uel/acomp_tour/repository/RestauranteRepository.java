@@ -39,4 +39,6 @@ public interface RestauranteRepository
 
     Boolean existsByNome(String nome);
     Boolean existsByNomeAndIdNot(String nome, Long id);
+
+    List<Restaurante> findByNomeContainingIgnoreCase(String nome, Sort sort);
 }
