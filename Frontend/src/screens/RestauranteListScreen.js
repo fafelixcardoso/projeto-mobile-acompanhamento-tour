@@ -46,8 +46,10 @@ export default function RestauranteListScreen({ navigation }) {
     try {
       if (showLoading) setLoading(true);
       const response = await api.get("/restaurantes");
+      console.log("Restaurantes carregados com sucesso:", response.data?.length);
       setRestaurantes(response.data);
     } catch (error) {
+      console.log("Erro ao carregar restaurantes:", error?.message);
       mostrarAlerta("Erro", "Não foi possível carregar os restaurantes.");
     } finally {
       setLoading(false);

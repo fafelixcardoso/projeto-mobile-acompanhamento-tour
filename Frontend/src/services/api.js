@@ -1,7 +1,7 @@
 import axios from "axios";
 
-// Para testes no Expo Go, troque 'localhost' pelo IP da sua máquina na rede local (ex: http://192.168.1.15:8080/api)
-const API_BASE_URL = "http://localhost:8080/api";
+// IP da máquina na rede local para conexão com o Expo Go no celular
+const API_BASE_URL = "http://192.168.15.11:8080/api";
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
