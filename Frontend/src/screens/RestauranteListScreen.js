@@ -3,6 +3,7 @@ import {
   View,
   StatusBar,
   Text,
+  TextInput,
   FlatList,
   StyleSheet,
   Pressable,
@@ -21,6 +22,10 @@ export default function RestauranteListScreen({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const timeoutRef = useRef(null);
+
+  const [termo, setTermo] = useState("");
+  const [ordenarPor, setOrdenarPor] = useState("nome");
+  const [direcao, setDirecao] = useState("ASC");
 
   useEffect(() => {
     return () => {
@@ -45,11 +50,15 @@ export default function RestauranteListScreen({ navigation }) {
   async function carregarRestaurantes(showLoading = true) {
     try {
       if (showLoading) setLoading(true);
-      const response = await api.get("/restaurantes");
-      console.log("Restaurantes carregados com sucesso:", response.data?.length);
+
+      const params = {};
+      if (termo.trim()) params.termo = termo.trim();
+      if (ordenarPor) params.ordenarPor = ordenarPor;
+      if (direcao) params.direcao = direcao;
+
+      const response = await api.get("/restaurantes", { params });
       setRestaurantes(response.data);
     } catch (error) {
-      console.log("Erro ao carregar restaurantes:", error?.message);
       mostrarAlerta("Erro", "Não foi possível carregar os restaurantes.");
     } finally {
       setLoading(false);
@@ -60,8 +69,16 @@ export default function RestauranteListScreen({ navigation }) {
   useFocusEffect(
     useCallback(() => {
       carregarRestaurantes();
-    }, [])
+    }, [termo, ordenarPor, direcao])
   );
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      carregarRestaurantes(false);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [termo, ordenarPor, direcao]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -116,10 +133,59 @@ export default function RestauranteListScreen({ navigation }) {
     <SafeAreaView style={styles.safeArea} edges={["bottom", "top"]}>
       <View style={styles.container}>
         <StatusBar style={styles.statusBar} />
+
         <View style={styles.header}>
           <Text style={styles.title}>Restaurantes</Text>
           <Pressable style={styles.addButton} onPress={handleAdd}>
             <Text style={styles.addButtonText}>Novo</Text>
+          </Pressable>
+        </View>
+
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Buscar restaurante por nome..."
+          placeholderTextColor="#9CA3AF"
+          value={termo}
+          onChangeText={setTermo}
+        />
+
+        <View style={styles.sortContainer}>
+          <View style={styles.sortChips}>
+            <Pressable
+              style={[styles.chip, ordenarPor === "nome" && styles.chipActive]}
+              onPress={() => setOrdenarPor("nome")}
+            >
+              <Text style={[styles.chipText, ordenarPor === "nome" && styles.chipTextActive]}>
+                Nome
+              </Text>
+            </Pressable>
+
+            <Pressable
+              style={[styles.chip, ordenarPor === "avaliacao" && styles.chipActive]}
+              onPress={() => setOrdenarPor("avaliacao")}
+            >
+              <Text style={[styles.chipText, ordenarPor === "avaliacao" && styles.chipTextActive]}>
+                Nota
+              </Text>
+            </Pressable>
+
+            <Pressable
+              style={[styles.chip, ordenarPor === "economia" && styles.chipActive]}
+              onPress={() => setOrdenarPor("economia")}
+            >
+              <Text style={[styles.chipText, ordenarPor === "economia" && styles.chipTextActive]}>
+                Economia
+              </Text>
+            </Pressable>
+          </View>
+
+          <Pressable
+            style={styles.directionButton}
+            onPress={() => setDirecao((prev) => (prev === "ASC" ? "DESC" : "ASC"))}
+          >
+            <Text style={styles.directionButtonText}>
+              {direcao === "ASC" ? "↑ Crescente" : "↓ Decrescente"}
+            </Text>
           </Pressable>
         </View>
 
@@ -140,7 +206,7 @@ export default function RestauranteListScreen({ navigation }) {
               restaurantes.length === 0 && styles.emptyListContainer
             }
             ListEmptyComponent={
-              <Text style={styles.emptyText}>Nenhum restaurante cadastrado.</Text>
+              <Text style={styles.emptyText}>Nenhum restaurante encontrado.</Text>
             }
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -156,7 +222,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: "#F3F4F6",
-    marginBottom: 12,
   },
   container: {
     flex: 1,
@@ -171,26 +236,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginTop: 12,
-    marginBottom: 12,
+    marginBottom: 10,
   },
   title: {
     fontSize: 24,
     fontWeight: "700",
     color: "#111827",
-  },
-  successBanner: {
-    backgroundColor: "#D1FAE5",
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: "#6EE7B7",
-  },
-  successBannerText: {
-    color: "#065F46",
-    fontSize: 14,
-    fontWeight: "500",
   },
   addButton: {
     backgroundColor: "#1A237E",
@@ -202,6 +253,70 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontWeight: "600",
   },
+  searchInput: {
+    backgroundColor: "#FFF",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+    fontSize: 14,
+    marginBottom: 10,
+  },
+  sortContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  sortChips: {
+    flexDirection: "row",
+    gap: 6,
+  },
+  chip: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 6,
+    backgroundColor: "#E5E7EB",
+  },
+  chipActive: {
+    backgroundColor: "#1A237E",
+  },
+  chipText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#4B5563",
+  },
+  chipTextActive: {
+    color: "#FFF",
+  },
+  directionButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 6,
+    backgroundColor: "#FFF",
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+  },
+  directionButtonText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#1F2937",
+  },
+  successBanner: {
+    backgroundColor: "#D1FAE5",
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#6EE7B7",
+  },
+  successBannerText: {
+    color: "#065F46",
+    fontSize: 14,
+    fontWeight: "500",
+  },
   loading: {
     marginTop: 32,
   },
@@ -212,5 +327,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     color: "#6B7280",
+    marginTop: 20,
   },
 });
