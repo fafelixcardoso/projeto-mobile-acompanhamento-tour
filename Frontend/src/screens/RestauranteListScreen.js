@@ -137,14 +137,14 @@ export default function RestauranteListScreen({ navigation }) {
         <View style={styles.header}>
           <Text style={styles.title}>Restaurantes</Text>
           <Pressable style={styles.addButton} onPress={handleAdd}>
-            <Text style={styles.addButtonText}>Novo</Text>
+            <Text style={styles.addButtonText}>+ Cadastrar</Text>
           </Pressable>
         </View>
 
         <TextInput
           style={styles.searchInput}
           placeholder="Buscar restaurante por nome..."
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor="#94A3B8"
           value={termo}
           onChangeText={setTermo}
         />
@@ -196,7 +196,7 @@ export default function RestauranteListScreen({ navigation }) {
         ) : null}
 
         {loading ? (
-          <ActivityIndicator size="large" color="#1A237E" style={styles.loading} />
+          <ActivityIndicator size="large" color="#003575" style={styles.loading} />
         ) : (
           <FlatList
             data={restaurantes}
@@ -209,7 +209,7 @@ export default function RestauranteListScreen({ navigation }) {
               <Text style={styles.emptyText}>Nenhum restaurante encontrado.</Text>
             }
             refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#003575"]} />
             }
           />
         )}
@@ -221,12 +221,12 @@ export default function RestauranteListScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#F3F4F6",
+    backgroundColor: "#FFFEE6",
   },
   container: {
     flex: 1,
     paddingHorizontal: 16,
-    backgroundColor: "#F3F4F6",
+    backgroundColor: "#FFFEE6",
   },
   statusBar: {
     barStyle: "light-content",
@@ -235,32 +235,34 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 12,
+    marginTop: 10,
     marginBottom: 10,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#111827",
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#003575",
   },
   addButton: {
-    backgroundColor: "#1A237E",
-    paddingHorizontal: 16,
+    backgroundColor: "#589F2E",
+    paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 8,
+    borderRadius: 6,
   },
   addButtonText: {
     color: "#FFF",
-    fontWeight: "600",
+    fontWeight: "bold",
+    fontSize: 14,
   },
   searchInput: {
     backgroundColor: "#FFF",
-    borderRadius: 8,
+    borderRadius: 6,
     paddingHorizontal: 12,
-    paddingVertical: 9,
+    paddingVertical: 8,
     borderWidth: 1,
-    borderColor: "#D1D5DB",
+    borderColor: "#CBD5E1",
     fontSize: 14,
+    color: "#1E293B",
     marginBottom: 10,
   },
   sortContainer: {
@@ -277,15 +279,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 6,
-    backgroundColor: "#E5E7EB",
+    backgroundColor: "#E2E8F0",
   },
   chipActive: {
-    backgroundColor: "#1A237E",
+    backgroundColor: "#003575",
   },
   chipText: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#4B5563",
+    color: "#475569",
   },
   chipTextActive: {
     color: "#FFF",
@@ -296,26 +298,26 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: "#FFF",
     borderWidth: 1,
-    borderColor: "#D1D5DB",
+    borderColor: "#003575",
   },
   directionButtonText: {
     fontSize: 12,
-    fontWeight: "600",
-    color: "#1F2937",
+    fontWeight: "bold",
+    color: "#003575",
   },
   successBanner: {
-    backgroundColor: "#D1FAE5",
-    borderRadius: 8,
+    backgroundColor: "#D1E7DD",
+    borderRadius: 6,
     paddingVertical: 8,
     paddingHorizontal: 12,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#6EE7B7",
+    borderColor: "#BADBCC",
   },
   successBannerText: {
-    color: "#065F46",
-    fontSize: 14,
-    fontWeight: "500",
+    color: "#0F5132",
+    fontSize: 13,
+    fontWeight: "600",
   },
   loading: {
     marginTop: 32,
@@ -326,7 +328,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   emptyText: {
-    color: "#6B7280",
+    color: "#64748B",
     marginTop: 20,
+    fontSize: 14,
   },
 });

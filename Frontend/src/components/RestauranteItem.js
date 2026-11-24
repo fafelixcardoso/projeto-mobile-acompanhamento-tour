@@ -20,10 +20,13 @@ export default function RestauranteItem({ restaurante, onPress, onDelete }) {
 
       <View style={styles.infoRow}>
         <Text style={styles.itemInfo}>
-          Nota: <Text style={styles.infoDestaque}>{restaurante.avaliacao} / 5</Text>
+          Nota: <Text style={styles.infoNota}>{restaurante.avaliacao} / 5</Text>
         </Text>
         <Text style={styles.itemInfo}>
-          Economia: <Text style={styles.infoDestaque}>R$ {restaurante.economia != null ? Number(restaurante.economia).toFixed(2) : "0.00"}</Text>
+          Economia:{" "}
+          <Text style={styles.infoEconomia}>
+            R$ {restaurante.economia != null ? Number(restaurante.economia).toFixed(2) : "0.00"}
+          </Text>
         </Text>
       </View>
 
@@ -46,7 +49,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     elevation: 2,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: "#E2E8F0",
+    borderLeftWidth: 4,
+    borderLeftColor: "#003575",
   },
   itemHeader: {
     flexDirection: "row",
@@ -54,9 +59,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   itemNome: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#1F2937",
+    fontSize: 17,
+    fontWeight: "bold",
+    color: "#003575",
     flex: 1,
   },
   buttonsContainer: {
@@ -65,7 +70,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   itemEndereco: {
-    color: "#4B5563",
+    color: "#64748B",
     marginTop: 4,
     fontSize: 14,
   },
@@ -73,49 +78,53 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 8,
-    backgroundColor: "#F9FAFB",
-    padding: 6,
+    backgroundColor: "#F8FAFC",
+    padding: 8,
     borderRadius: 6,
   },
   itemInfo: {
     fontSize: 13,
-    color: "#4B5563",
+    color: "#475569",
   },
-  infoDestaque: {
-    fontWeight: "600",
-    color: "#111827",
+  infoNota: {
+    fontWeight: "bold",
+    color: "#003575",
+  },
+  infoEconomia: {
+    fontWeight: "bold",
+    color: "#589F2E",
   },
   itemData: {
-    color: "#6B7280",
+    color: "#64748B",
     fontSize: 12,
     marginTop: 6,
   },
   itemComentario: {
-    color: "#374151",
+    color: "#334155",
     fontSize: 13,
     fontStyle: "italic",
     marginTop: 6,
   },
   editButton: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    backgroundColor: "#EFF6FF",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    backgroundColor: "#0060AD",
     borderRadius: 4,
   },
   deleteButton: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    backgroundColor: "#FEF2F2",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    backgroundColor: "#DC3545",
     borderRadius: 4,
   },
   editText: {
-    color: "#2563EB",
-    fontWeight: "600",
-    fontSize: 13,
+    color: "#FFF",
+    fontWeight: "bold",
+    fontSize: 12,
   },
   deleteText: {
-    color: "#DC2626",
-    fontWeight: "600",
-    fontSize: 13,
+    color: "#FFF",
+    fontWeight: "bold",
+    fontSize: 12,
   },
 });

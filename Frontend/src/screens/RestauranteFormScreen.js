@@ -11,7 +11,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { api } from "../services/api";
 
-const PLACEHOLDER_COLOR = "#9CA3AF";
+const PLACEHOLDER_COLOR = "#94A3B8";
 
 export default function RestauranteFormScreen({ route, navigation }) {
   const { mode, restaurante, onSuccess } = route.params || {};
@@ -67,111 +67,129 @@ export default function RestauranteFormScreen({ route, navigation }) {
     <SafeAreaView style={styles.safeArea} edges={["bottom", "top"]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <StatusBar style={styles.statusBar} />
-        <Text style={styles.title}>
-          {mode === "edit" ? "Editar Restaurante" : "Novo Restaurante"}
-        </Text>
 
-        {errors.general && (
-          <View style={styles.errorBanner}>
-            <Text style={styles.errorBannerText}>{errors.general}</Text>
-          </View>
-        )}
-
-        <Text style={styles.label}>Nome</Text>
-        <TextInput
-          style={styles.input}
-          value={nome}
-          onChangeText={(text) => {
-            setNome(text);
-            setErrors((prev) => ({ ...prev, nome: null }));
-          }}
-          placeholder="Nome do restaurante"
-          placeholderTextColor={PLACEHOLDER_COLOR}
-          maxLength={150}
-        />
-        {errors.nome && <Text style={styles.errorText}>{errors.nome}</Text>}
-
-        <Text style={styles.label}>Endereço</Text>
-        <TextInput
-          style={styles.input}
-          value={endereco}
-          onChangeText={(text) => {
-            setEndereco(text);
-            setErrors((prev) => ({ ...prev, endereco: null }));
-          }}
-          placeholder="Endereço do restaurante"
-          placeholderTextColor={PLACEHOLDER_COLOR}
-          maxLength={200}
-        />
-        {errors.endereco && <Text style={styles.errorText}>{errors.endereco}</Text>}
-
-        <Text style={styles.label}>Economia (R$)</Text>
-        <TextInput
-          style={styles.input}
-          value={economia}
-          onChangeText={(text) => {
-            setEconomia(text);
-            setErrors((prev) => ({ ...prev, economia: null }));
-          }}
-          placeholder="Ex: 25.50"
-          placeholderTextColor={PLACEHOLDER_COLOR}
-          keyboardType="decimal-pad"
-        />
-        {errors.economia && <Text style={styles.errorText}>{errors.economia}</Text>}
-
-        <Text style={styles.label}>Avaliação (0 a 5)</Text>
-        <TextInput
-          style={styles.input}
-          value={avaliacao}
-          onChangeText={(text) => {
-            setAvaliacao(text);
-            setErrors((prev) => ({ ...prev, avaliacao: null }));
-          }}
-          placeholder="Ex: 4.8"
-          placeholderTextColor={PLACEHOLDER_COLOR}
-          keyboardType="decimal-pad"
-        />
-        {errors.avaliacao && <Text style={styles.errorText}>{errors.avaliacao}</Text>}
-
-        <Text style={styles.label}>Data da Visita</Text>
-        <TextInput
-          style={styles.input}
-          value={dataVisita}
-          onChangeText={(text) => {
-            setDataVisita(text);
-            setErrors((prev) => ({ ...prev, dataVisita: null }));
-          }}
-          placeholder="AAAA-MM-DD"
-          placeholderTextColor={PLACEHOLDER_COLOR}
-          maxLength={10}
-        />
-        {errors.dataVisita && <Text style={styles.errorText}>{errors.dataVisita}</Text>}
-
-        <Text style={styles.label}>Comentário</Text>
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          value={comentario}
-          onChangeText={(text) => {
-            setComentario(text);
-            setErrors((prev) => ({ ...prev, comentario: null }));
-          }}
-          placeholder="Comentário sobre a visita (opcional)"
-          placeholderTextColor={PLACEHOLDER_COLOR}
-          multiline
-          numberOfLines={3}
-          maxLength={500}
-        />
-        {errors.comentario && <Text style={styles.errorText}>{errors.comentario}</Text>}
-
-        <Pressable
-          style={[styles.button, saving && styles.buttonDisabled]}
-          onPress={handleSave}
-          disabled={saving}
-        >
-          <Text style={styles.buttonText}>
-            {saving ? "Salvando..." : "Salvar"}
+        <View style={styles.card}>
+          <Text style={styles.title}>
+            {mode === "edit" ? "Editar Restaurante" : "Novo Restaurante"}
           </Text>
-        </Pressable>
+
+          {errors.general && (
+            <View style={styles.errorBanner}>
+              <Text style={styles.errorBannerText}>{errors.general}</Text>
+            </View>
+          )}
+
+          <Text style={styles.label}>Nome*</Text>
+          <TextInput
+            style={styles.input}
+            value={nome}
+            onChangeText={(text) => {
+              setNome(text);
+              setErrors((prev) => ({ ...prev, nome: null }));
+            }}
+            placeholder="Ex: Outback"
+            placeholderTextColor={PLACEHOLDER_COLOR}
+            maxLength={150}
+          />
+          {errors.nome && <Text style={styles.errorText}>{errors.nome}</Text>}
+
+          <Text style={styles.label}>Endereço*</Text>
+          <TextInput
+            style={styles.input}
+            value={endereco}
+            onChangeText={(text) => {
+              setEndereco(text);
+              setErrors((prev) => ({ ...prev, endereco: null }));
+            }}
+            placeholder="Ex: Av. Higienópolis, 1000"
+            placeholderTextColor={PLACEHOLDER_COLOR}
+            maxLength={200}
+          />
+          {errors.endereco && <Text style={styles.errorText}>{errors.endereco}</Text>}
+
+          <Text style={styles.label}>Economia (R$)*</Text>
+          <TextInput
+            style={styles.input}
+            value={economia}
+            onChangeText={(text) => {
+              setEconomia(text);
+              setErrors((prev) => ({ ...prev, economia: null }));
+            }}
+            placeholder="Ex: 50.00"
+            placeholderTextColor={PLACEHOLDER_COLOR}
+            keyboardType="decimal-pad"
+          />
+          {errors.economia && <Text style={styles.errorText}>{errors.economia}</Text>}
+
+          <Text style={styles.label}>Avaliação (0 a 5)*</Text>
+          <TextInput
+            style={styles.input}
+            value={avaliacao}
+            onChangeText={(text) => {
+              setAvaliacao(text);
+              setErrors((prev) => ({ ...prev, avaliacao: null }));
+            }}
+            placeholder="Ex: 4.8"
+            placeholderTextColor={PLACEHOLDER_COLOR}
+            keyboardType="decimal-pad"
+          />
+          {errors.avaliacao && <Text style={styles.errorText}>{errors.avaliacao}</Text>}
+
+          <Text style={styles.label}>Data da Visita</Text>
+          <TextInput
+            style={styles.input}
+            value={dataVisita}
+            onChangeText={(text) => {
+              setDataVisita(text);
+              setErrors((prev) => ({ ...prev, dataVisita: null }));
+            }}
+            placeholder="AAAA-MM-DD"
+            placeholderTextColor={PLACEHOLDER_COLOR}
+            maxLength={10}
+          />
+          {errors.dataVisita && <Text style={styles.errorText}>{errors.dataVisita}</Text>}
+
+          <Text style={styles.label}>Comentário</Text>
+          <TextInput
+            style={[styles.input, styles.textArea]}
+            value={comentario}
+            onChangeText={(text) => {
+              setComentario(text);
+              setErrors((prev) => ({ ...prev, comentario: null }));
+            }}
+            placeholder="Observações sobre o restaurante"
+            placeholderTextColor={PLACEHOLDER_COLOR}
+            multiline
+            numberOfLines={3}
+            maxLength={500}
+          />
+          {errors.comentario && <Text style={styles.errorText}>{errors.comentario}</Text>}
+
+          <Text style={styles.hint}>* Campos obrigatórios</Text>
+
+          <View style={styles.buttonRow}>
+            <Pressable
+              style={styles.cancelButton}
+              onPress={() => navigation.goBack()}
+            >
+              <Text style={styles.buttonText}>Cancelar</Text>
+            </Pressable>
+
+            <Pressable
+              style={[styles.saveButton, saving && styles.buttonDisabled]}
+              onPress={handleSave}
+              disabled={saving}
+            >
+              <Text style={styles.buttonText}>
+                {saving
+                  ? "Salvando..."
+                  : mode === "edit"
+                  ? "Atualizar"
+                  : "Cadastrar"}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -180,74 +198,96 @@ export default function RestauranteFormScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#F3F4F6",
+    backgroundColor: "#FFFEE6",
   },
   scrollContent: {
     paddingHorizontal: 16,
-    paddingBottom: 32,
+    paddingVertical: 12,
   },
   statusBar: {
     barStyle: "light-content",
   },
+  card: {
+    backgroundColor: "#003575",
+    borderRadius: 10,
+    padding: 16,
+    elevation: 3,
+  },
   title: {
-    fontSize: 24,
-    fontWeight: "700",
-    marginTop: 12,
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 8,
-    color: "#111827",
+    color: "#FFF",
   },
   errorBanner: {
-    backgroundColor: "#FEE2E2",
-    borderRadius: 8,
+    backgroundColor: "#FEF2F2",
+    borderRadius: 6,
     paddingVertical: 8,
     paddingHorizontal: 12,
     marginVertical: 8,
     borderWidth: 1,
-    borderColor: "#FCA5A5",
+    borderColor: "#F87171",
   },
   errorBannerText: {
-    color: "#B91C1C",
-    fontSize: 14,
-    fontWeight: "500",
+    color: "#DC2626",
+    fontSize: 13,
+    fontWeight: "600",
   },
   label: {
     fontSize: 14,
-    fontWeight: "600",
-    marginTop: 12,
+    fontWeight: "bold",
+    marginTop: 10,
     marginBottom: 4,
-    color: "#374151",
+    color: "#FFF",
   },
   input: {
     backgroundColor: "#FFF",
-    borderRadius: 8,
+    borderRadius: 6,
     paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    fontSize: 15,
+    paddingVertical: 8,
+    fontSize: 14,
+    color: "#1E293B",
   },
   textArea: {
-    minHeight: 70,
+    minHeight: 65,
     textAlignVertical: "top",
   },
   errorText: {
-    color: "#B91C1C",
+    color: "#FBBF24",
     fontSize: 12,
+    fontWeight: "600",
     marginTop: 4,
   },
-  button: {
-    marginTop: 24,
-    backgroundColor: "#1A237E",
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: "center",
+  hint: {
+    color: "rgba(255, 255, 255, 0.7)",
+    fontSize: 12,
+    marginTop: 12,
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: 10,
+    marginTop: 20,
+  },
+  cancelButton: {
+    backgroundColor: "#DC3545",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 6,
+  },
+  saveButton: {
+    backgroundColor: "#589F2E",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 6,
   },
   buttonDisabled: {
     opacity: 0.7,
   },
   buttonText: {
     color: "#FFF",
-    fontWeight: "600",
-    fontSize: 16,
+    fontWeight: "bold",
+    fontSize: 14,
   },
 });
