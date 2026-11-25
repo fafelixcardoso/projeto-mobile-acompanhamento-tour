@@ -7,11 +7,42 @@ import {
   StyleSheet,
   Pressable,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { api } from "../services/api";
 
 const PLACEHOLDER_COLOR = "#94A3B8";
+
+function formatarParaBR(dataIso) {
+  if (!dataIso) return "";
+  const partes = dataIso.split("-");
+  if (partes.length === 3) {
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+  }
+  return dataIso;
+}
+
+function aplicarMascaraData(valor) {
+  const digitos = valor.replace(/\D/g, "").slice(0, 8);
+  if (digitos.length <= 2) {
+    return digitos;
+  }
+  if (digitos.length <= 4) {
+    return `${digitos.slice(0, 2)}/${digitos.slice(2)}`;
+  }
+  return `${digitos.slice(0, 2)}/${digitos.slice(2, 4)}/${digitos.slice(4)}`;
+}
+
+function converterParaISO(dataBR) {
+  if (!dataBR || !dataBR.trim()) return null;
+  const partes = dataBR.trim().split("/");
+  if (partes.length === 3 && partes[2].length === 4) {
+    return `${partes[2]}-${partes[1]}-${partes[0]}`;
+  }
+  return dataBR.trim();
+}
 
 export default function RestauranteFormScreen({ route, navigation }) {
   const { mode, restaurante, onSuccess } = route.params || {};
@@ -24,19 +55,37 @@ export default function RestauranteFormScreen({ route, navigation }) {
   const [avaliacao, setAvaliacao] = useState(
     restaurante?.avaliacao != null ? String(restaurante.avaliacao) : ""
   );
-  const [dataVisita, setDataVisita] = useState(restaurante?.dataVisita || "");
+  const [dataVisita, setDataVisita] = useState(
+    restaurante?.dataVisita ? formatarParaBR(restaurante.dataVisita) : ""
+  );
   const [comentario, setComentario] = useState(restaurante?.comentario || "");
 
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState({});
 
   async function handleSave() {
+    if (dataVisita.trim()) {
+      const partes = dataVisita.trim().split("/");
+      if (
+        partes.length !== 3 ||
+        partes[0].length !== 2 ||
+        partes[1].length !== 2 ||
+        partes[2].length !== 4
+      ) {
+        setErrors((prev) => ({
+          ...prev,
+          dataVisita: "Data deve estar no formato DD/MM/AAAA",
+        }));
+        return;
+      }
+    }
+
     const payload = {
       nome: nome.trim(),
       endereco: endereco.trim(),
       economia: economia.trim() === "" ? null : Number(economia.replace(",", ".")),
       avaliacao: avaliacao.trim() === "" ? null : Number(avaliacao.replace(",", ".")),
-      dataVisita: dataVisita.trim() === "" ? null : dataVisita.trim(),
+      dataVisita: converterParaISO(dataVisita),
       comentario: comentario.trim() === "" ? null : comentario.trim(),
     };
 
@@ -65,132 +114,143 @@ export default function RestauranteFormScreen({ route, navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom", "top"]}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <StatusBar style={styles.statusBar} />
+      <KeyboardAvoidingView
+        style={styles.keyboardContainer}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <StatusBar style={styles.statusBar} />
 
-        <View style={styles.card}>
-          <Text style={styles.title}>
-            {mode === "edit" ? "Editar Restaurante" : "Novo Restaurante"}
-          </Text>
+          <View style={styles.card}>
+            <Text style={styles.title}>
+              {mode === "edit" ? "Editar Restaurante" : "Novo Restaurante"}
+            </Text>
 
-          {errors.general && (
-            <View style={styles.errorBanner}>
-              <Text style={styles.errorBannerText}>{errors.general}</Text>
+            {errors.general && (
+              <View style={styles.errorBanner}>
+                <Text style={styles.errorBannerText}>{errors.general}</Text>
+              </View>
+            )}
+
+            <Text style={styles.label}>Nome*</Text>
+            <TextInput
+              style={styles.input}
+              value={nome}
+              onChangeText={(text) => {
+                setNome(text);
+                setErrors((prev) => ({ ...prev, nome: null }));
+              }}
+              placeholder="Ex: Outback"
+              placeholderTextColor={PLACEHOLDER_COLOR}
+              maxLength={150}
+            />
+            {errors.nome && <Text style={styles.errorText}>{errors.nome}</Text>}
+
+            <Text style={styles.label}>Endereço*</Text>
+            <TextInput
+              style={styles.input}
+              value={endereco}
+              onChangeText={(text) => {
+                setEndereco(text);
+                setErrors((prev) => ({ ...prev, endereco: null }));
+              }}
+              placeholder="Ex: Av. Higienópolis, 1000"
+              placeholderTextColor={PLACEHOLDER_COLOR}
+              maxLength={200}
+            />
+            {errors.endereco && <Text style={styles.errorText}>{errors.endereco}</Text>}
+
+            <Text style={styles.label}>Economia (R$)*</Text>
+            <TextInput
+              style={styles.input}
+              value={economia}
+              onChangeText={(text) => {
+                setEconomia(text);
+                setErrors((prev) => ({ ...prev, economia: null }));
+              }}
+              placeholder="Ex: 50.00"
+              placeholderTextColor={PLACEHOLDER_COLOR}
+              keyboardType="decimal-pad"
+            />
+            {errors.economia && <Text style={styles.errorText}>{errors.economia}</Text>}
+
+            <Text style={styles.label}>Avaliação (0 a 5)*</Text>
+            <TextInput
+              style={styles.input}
+              value={avaliacao}
+              onChangeText={(text) => {
+                setAvaliacao(text);
+                setErrors((prev) => ({ ...prev, avaliacao: null }));
+              }}
+              placeholder="Ex: 4.8"
+              placeholderTextColor={PLACEHOLDER_COLOR}
+              keyboardType="decimal-pad"
+            />
+            {errors.avaliacao && <Text style={styles.errorText}>{errors.avaliacao}</Text>}
+
+            <Text style={styles.label}>Data da Visita</Text>
+            <TextInput
+              style={styles.input}
+              value={dataVisita}
+              onChangeText={(text) => {
+                setDataVisita(aplicarMascaraData(text));
+                setErrors((prev) => ({ ...prev, dataVisita: null }));
+              }}
+              placeholder="DD/MM/AAAA"
+              placeholderTextColor={PLACEHOLDER_COLOR}
+              keyboardType="numeric"
+              maxLength={10}
+            />
+            {errors.dataVisita && <Text style={styles.errorText}>{errors.dataVisita}</Text>}
+
+            <Text style={styles.label}>Comentário</Text>
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              value={comentario}
+              onChangeText={(text) => {
+                setComentario(text);
+                setErrors((prev) => ({ ...prev, comentario: null }));
+              }}
+              placeholder="Observações sobre o restaurante"
+              placeholderTextColor={PLACEHOLDER_COLOR}
+              multiline
+              numberOfLines={3}
+              maxLength={500}
+            />
+            {errors.comentario && <Text style={styles.errorText}>{errors.comentario}</Text>}
+
+            <Text style={styles.hint}>* Campos obrigatórios</Text>
+
+            <View style={styles.buttonRow}>
+              <Pressable
+                style={styles.cancelButton}
+                onPress={() => navigation.goBack()}
+              >
+                <Text style={styles.buttonText}>Cancelar</Text>
+              </Pressable>
+
+              <Pressable
+                style={[styles.saveButton, saving && styles.buttonDisabled]}
+                onPress={handleSave}
+                disabled={saving}
+              >
+                <Text style={styles.buttonText}>
+                  {saving
+                    ? "Salvando..."
+                    : mode === "edit"
+                    ? "Atualizar"
+                    : "Cadastrar"}
+                </Text>
+              </Pressable>
             </View>
-          )}
-
-          <Text style={styles.label}>Nome*</Text>
-          <TextInput
-            style={styles.input}
-            value={nome}
-            onChangeText={(text) => {
-              setNome(text);
-              setErrors((prev) => ({ ...prev, nome: null }));
-            }}
-            placeholder="Ex: Outback"
-            placeholderTextColor={PLACEHOLDER_COLOR}
-            maxLength={150}
-          />
-          {errors.nome && <Text style={styles.errorText}>{errors.nome}</Text>}
-
-          <Text style={styles.label}>Endereço*</Text>
-          <TextInput
-            style={styles.input}
-            value={endereco}
-            onChangeText={(text) => {
-              setEndereco(text);
-              setErrors((prev) => ({ ...prev, endereco: null }));
-            }}
-            placeholder="Ex: Av. Higienópolis, 1000"
-            placeholderTextColor={PLACEHOLDER_COLOR}
-            maxLength={200}
-          />
-          {errors.endereco && <Text style={styles.errorText}>{errors.endereco}</Text>}
-
-          <Text style={styles.label}>Economia (R$)*</Text>
-          <TextInput
-            style={styles.input}
-            value={economia}
-            onChangeText={(text) => {
-              setEconomia(text);
-              setErrors((prev) => ({ ...prev, economia: null }));
-            }}
-            placeholder="Ex: 50.00"
-            placeholderTextColor={PLACEHOLDER_COLOR}
-            keyboardType="decimal-pad"
-          />
-          {errors.economia && <Text style={styles.errorText}>{errors.economia}</Text>}
-
-          <Text style={styles.label}>Avaliação (0 a 5)*</Text>
-          <TextInput
-            style={styles.input}
-            value={avaliacao}
-            onChangeText={(text) => {
-              setAvaliacao(text);
-              setErrors((prev) => ({ ...prev, avaliacao: null }));
-            }}
-            placeholder="Ex: 4.8"
-            placeholderTextColor={PLACEHOLDER_COLOR}
-            keyboardType="decimal-pad"
-          />
-          {errors.avaliacao && <Text style={styles.errorText}>{errors.avaliacao}</Text>}
-
-          <Text style={styles.label}>Data da Visita</Text>
-          <TextInput
-            style={styles.input}
-            value={dataVisita}
-            onChangeText={(text) => {
-              setDataVisita(text);
-              setErrors((prev) => ({ ...prev, dataVisita: null }));
-            }}
-            placeholder="AAAA-MM-DD"
-            placeholderTextColor={PLACEHOLDER_COLOR}
-            maxLength={10}
-          />
-          {errors.dataVisita && <Text style={styles.errorText}>{errors.dataVisita}</Text>}
-
-          <Text style={styles.label}>Comentário</Text>
-          <TextInput
-            style={[styles.input, styles.textArea]}
-            value={comentario}
-            onChangeText={(text) => {
-              setComentario(text);
-              setErrors((prev) => ({ ...prev, comentario: null }));
-            }}
-            placeholder="Observações sobre o restaurante"
-            placeholderTextColor={PLACEHOLDER_COLOR}
-            multiline
-            numberOfLines={3}
-            maxLength={500}
-          />
-          {errors.comentario && <Text style={styles.errorText}>{errors.comentario}</Text>}
-
-          <Text style={styles.hint}>* Campos obrigatórios</Text>
-
-          <View style={styles.buttonRow}>
-            <Pressable
-              style={styles.cancelButton}
-              onPress={() => navigation.goBack()}
-            >
-              <Text style={styles.buttonText}>Cancelar</Text>
-            </Pressable>
-
-            <Pressable
-              style={[styles.saveButton, saving && styles.buttonDisabled]}
-              onPress={handleSave}
-              disabled={saving}
-            >
-              <Text style={styles.buttonText}>
-                {saving
-                  ? "Salvando..."
-                  : mode === "edit"
-                  ? "Atualizar"
-                  : "Cadastrar"}
-              </Text>
-            </Pressable>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -200,9 +260,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFFEE6",
   },
+  keyboardContainer: {
+    flex: 1,
+  },
   scrollContent: {
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingTop: 12,
+    paddingBottom: 60,
   },
   statusBar: {
     barStyle: "light-content",

@@ -1,5 +1,14 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 
+function formatarData(data) {
+  if (!data) return "";
+  const partes = data.split("-");
+  if (partes.length === 3) {
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+  }
+  return data;
+}
+
 export default function RestauranteItem({ restaurante, onPress, onDelete }) {
   return (
     <View style={styles.itemContainer}>
@@ -31,7 +40,7 @@ export default function RestauranteItem({ restaurante, onPress, onDelete }) {
       </View>
 
       {restaurante.dataVisita ? (
-        <Text style={styles.itemData}>Visita em: {restaurante.dataVisita}</Text>
+        <Text style={styles.itemData}>Visita em: {formatarData(restaurante.dataVisita)}</Text>
       ) : null}
 
       {restaurante.comentario ? (
